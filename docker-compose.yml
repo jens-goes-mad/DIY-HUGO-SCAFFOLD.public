@@ -1,0 +1,23 @@
+# Reference docker-compose.yml for a Hugo dev server that imports this scaffold module.
+#
+# NOT pulled in automatically by Hugo Modules (module mounts only cover Hugo build
+# inputs -- layouts/assets/config/content -- not arbitrary tooling files like this one).
+# Copy this into your site's own repo root and fill in <SUBPATH> below with your GitHub
+# Pages project subpath (e.g. the part after github.io/ in your config.toml's baseurl).
+services:
+  hugo:
+    image: hugomods/hugo:exts-non-root
+    volumes:
+      - .:/src
+      - ${HOME}/hugo_cache:/tmp/hugo_cache
+    ports:
+      - "1313:1313"
+    # --baseURL overrides config.toml's production baseurl for THIS dev server only --
+    # config.toml's own `canonifyURLs = true` (needed so root-relative content links
+    # resolve correctly under GitHub Pages' subpath) makes Hugo write fully-absolute
+    # URLs into every generated page, which without this override means every asset/
+    # image src points at the real production domain even when served locally --
+    # anything not yet pushed just 404s in the browser, even though the dev server has
+    # it. The production build (`hugo --minify`, run by .github/workflows/hugo.yml)
+    # never passes --baseURL, so it's unaffected and still uses config.toml's real value.
+    command: hugo server --bind 0.0.0.0 --baseURL http://localhost:1313/<SUBPATH>/ --disableFastRender --noBuildLock --cleanDestinationDir -D
