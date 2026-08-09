@@ -26,17 +26,21 @@ split out. Fixing it once here, instead of three times, is the entire point.
 ## Wiring up a consuming site
 
 In the site's own `docs/go.mod` (or wherever its Hugo project root's `go.mod` lives),
-add a second import alongside the theme -- **order matters**: this scaffold's layouts
-intentionally override some of the theme's own (e.g. the homepage-redirect trick, the
-right-sidebar partial), so it must be imported *after* the theme for its files to win:
+add a second import alongside the theme -- **order matters, and it's the opposite of
+what you'd guess**: Hugo resolves an overlapping file (both layouts template lookup and
+`resources.Get()` asset lookup) to whichever import was declared *first*, not last --
+confirmed by direct testing (2026-08-09, a before/after `diff -rq` of the built `public/`
+output), not assumed. This scaffold's own `custom.scss`/layouts need to win over the
+theme's own placeholder defaults of the same name, so it must be declared *before* the
+theme:
 
 ```toml
 # config/_default/module.toml
 [[imports]]
-path = "github.com/CaiJimmy/hugo-theme-stack/v3"
+path = "github.com/jens-goes-mad/DIY-HUGO-SCAFFOLD.public"
 
 [[imports]]
-path = "github.com/jens-goes-mad/DIY-HUGO-SCAFFOLD.public"
+path = "github.com/CaiJimmy/hugo-theme-stack/v3"
 ```
 
 ```
