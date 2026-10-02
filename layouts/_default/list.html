@@ -126,9 +126,7 @@
 
     <section class="article-list">  <!-- article-list--compact -->
     {{ range $paginator.Pages }}
-        {{ .Scratch.Set "article-list" true }}
         {{ partial "article-list/default" . }}
-        {{ .Scratch.Delete "article-list" }}
     {{ end }}
     </section>
 

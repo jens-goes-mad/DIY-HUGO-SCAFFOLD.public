@@ -1,4 +1,12 @@
-{{ $inList := .Scratch.Get "article-list" | default false }}
+{{- /*
+    In a list (a section page, the homepage...) when the page being rendered
+    isn't this article itself. Deliberately NOT a .Scratch flag set by the
+    list: Scratch lives on the article's own page object, and Hugo renders
+    pages in parallel -- the article's own page could pick up the flag a list
+    had just set on it, so its header randomly came out "shown-by-list"
+    (observed: different output from two builds of the same unchanged site).
+*/ -}}
+{{ $inList := ne page . }}
 <header class="article-header {{ cond $inList "shown-by-list" "shown-by-page" }}">
     {{ $suppress := false }}
     {{ with .Params.imageSuppress }}
